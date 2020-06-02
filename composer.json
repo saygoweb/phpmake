@@ -1,0 +1,16 @@
+{
+    "name": "saygoweb/deploy",
+    "description": "API for integrating with GitHub to deploy code.",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Cambell",
+            "email": "cambell.prince@gmail.com"
+        }
+    ],
+    "require": {
+        "slim/slim": "^4.5",
+        "php-di/php-di": "^6.1"
+    }
+}

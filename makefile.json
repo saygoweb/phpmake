@@ -1,0 +1,50 @@
+{
+    "variables": {
+        "repo": "git@github.com:mseag/web-cambodia.git",
+        "codePath": "../code"
+    },
+    "clone": {
+        "provides": [
+            "#folder:{{codePath}}"
+        ],
+        "by": [
+            "git clone {{repo}} {{codePath}}"
+        ]
+    },
+    "pull": {
+        "depends": [
+            "clone"
+        ],
+        "by": [
+            "cd {{codePath}} && git pull origin master"
+        ]
+    },
+    "build": {
+        "depends": [
+            "pull"
+        ],
+        "by": [
+            "cd {{codePath}} && npm install",
+            "cd {{codePath}} && npm run generate"
+        ]
+    },
+    "rm_app": {
+        "by": [
+            "rm -r app"
+        ]
+    },
+    "install": {
+        "depends": [
+            "build",
+            "rm_app"
+        ],
+        "by": [
+            "cp -a {{codePath}}/dist app"
+        ]
+    },
+    "test": {
+        "by": [
+            "echo {{codePath}} {{repo}}"
+        ]
+    }
+}

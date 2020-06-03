@@ -1,3 +1,5 @@
 /vendor/
 /app/
+/.vscode/
+/log/
 *.log

@@ -1,6 +1,4 @@
 <?php
-// TODO Webhook example https://gist.github.com/milo/daed6e958ea534e4eba3
-
 /**
  * Inspired by GitHub webhook handler template.
  * 

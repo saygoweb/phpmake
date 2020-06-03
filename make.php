@@ -6,6 +6,9 @@ class Runner
     /** @var Array<string> */
     private $errors = [];
 
+    /** @var Array */
+    private $options;
+
     private $logFile = null;
 
     /** @var Array */
@@ -21,9 +24,10 @@ class Runner
     /** @var DateTime */
     private $startTime = null;
 
-    public function __construct(string $makeFile, Array $variables)
+    public function __construct(Array $options, Array $variables)
     {
-        $json = file_get_contents($makeFile);
+        $this->options = $options;
+        $json = file_get_contents($this->options['file']);
         $this->makeConfig = json_decode($json, true);
         if (!isset($this->makeConfig['variables'])) {
             $this->makeConfig['variables'] = [];
@@ -34,9 +38,12 @@ class Runner
 
     public function __destruct()
     {
-        $now = new DateTime();
-        $elapsed = $this->startTime->diff($now);
-        $seconds = $elapsed->h * 3600 + $elapsed->i * 60 + $elapsed->s;
+        $seconds = 0;
+        if ($this->startTime) {
+            $now = new DateTime();
+            $elapsed = $this->startTime->diff($now);
+            $seconds = $elapsed->h * 3600 + $elapsed->i * 60 + $elapsed->s;
+        }
         $this->notice("Done in $seconds seconds");
         if ($this->logFile) {
             fclose($this->logFile);
@@ -152,15 +159,23 @@ class Runner
         switch ($type) {
             case 'execute':
                 $this->notice(" Execute '$doer'");
-                $handle = popen($doer, 'r');
-                if ($handle) {
-                    while (($buffer = fgets($handle)) !== false) {
+                $cwd = __DIR__;
+                $env = array_merge($_ENV, [
+                    'PATH="/usr/local/bin:/usr/bin:/bin"'
+                ]);
+                $descriptors = [
+                    1 => ["pipe", "w"]
+                ];
+                $handle = proc_open($doer, $descriptors, $pipes, $cwd, $env);
+                if ($handle && is_resource($handle)) {
+                    while (($buffer = fgets($pipes[1])) !== false) {
                         $this->output($buffer);
                     }
+                    fclose($pipes[1]);
                     // if (!feof($handle)) {
                     //     echo "Error: unexpected fgets() fail\n";
                     // }
-                    $returnCode = pclose($handle);
+                    $returnCode = proc_close($handle);
                     if ($returnCode != 0) {
                         $this->error("Return '$returnCode' from '$doer'");
                     }
@@ -179,11 +194,31 @@ EOD;
 }
 
 if (php_sapi_name() == 'cli') {
-    $runner = new Runner('makefile.json', []);
-
-    if ($argc != 2) {
-        usage();
-        exit;
+    $args = [
+        'file' => 'makefile.json',
+        'target' => '',
+    ];
+    $variables = [];
+    
+    foreach ($argv as $arg) {
+        $tokens = explode('=', $arg, 2);
+        if (count($tokens) == 2) {
+            if (key_exists($tokens[0], $args)) {
+                $args[$tokens[0]] = $tokens[1];
+            } else {
+                $variables[$tokens[0]] = $tokens[1];
+            }
+        } else {
+            switch($arg) {
+                case 'help':
+                    usage();
+                    exit;
+            }
+        }
     }
-    $runner->run($argv[1]);
+    if (!$args['target']) {
+        $args['target'] = $argv[$argc - 1];
+    }
+    $runner = new Runner($args, $variables);
+    $runner->run($args['target']);
 }

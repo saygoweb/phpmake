@@ -161,7 +161,7 @@ class Runner
                 $this->notice(" Execute '$doer'");
                 $cwd = __DIR__;
                 $env = array_merge($_ENV, [
-                    'PATH="/usr/local/bin:/usr/bin:/bin"'
+                    'PATH=/usr/local/bin:/usr/bin:/bin'
                 ]);
                 $descriptors = [
                     1 => ["pipe", "w"]

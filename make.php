@@ -188,7 +188,14 @@ class Runner
 function usage()
 {
     echo <<<'EOD'
-Usage: make target
+Usage: make.php options target
+ Options:
+  help                displays this help
+  file=makefile.json  load rules from the given makefile
+  target=target       build the given target
+  key=value           sets the variable 'key' to the given value
+
+target can be either the last option or given by the target= option.
 
 EOD;
 }

@@ -1,6 +1,17 @@
+# PHP Make
+
+A (very) simple build runner inspired by make.
+
+It has a json configuration file, the `makefile.json`, that describes targets that have optional dependencies.
+Each target can provide an output that can be checked, skipping the target if necessary. Each target provides
+a `by` key which is the array of commands to execute to complete the task.
+
+## Example makefile.json
+
+```json
 {
     "variables": {
-        "repo": "git@github.com:mseag/web-cambodia.git",
+        "repo": "git@github.com:saygoweb/php-make.git",
         "codePath": "../code"
     },
     "clone": {
@@ -43,3 +54,4 @@
         ]
     }
 }
+```

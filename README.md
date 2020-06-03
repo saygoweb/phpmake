@@ -11,7 +11,7 @@ a `by` key which is the array of commands to execute to complete the task.
 ```json
 {
     "variables": {
-        "repo": "git@github.com:saygoweb/php-make.git",
+        "repo": "git@github.com:saygoweb/phpmake.git",
         "codePath": "../code"
     },
     "clone": {

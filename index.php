@@ -7,6 +7,7 @@
  */
 
 $hookSecret = null;  # set NULL to disable check
+$branch = 'refs/heads/dev';
 
 set_error_handler(function ($severity, $message, $file, $line) {
     throw new \ErrorException($message, 0, $severity, $file, $line);
@@ -66,10 +67,13 @@ switch (strtolower($_SERVER['HTTP_X_GITHUB_EVENT'])) {
         break;
 
     case 'push':
-        exec('nohup ' . __DIR__ . '/make.php install > /dev/null 2>&1 &');
-        $result = 'ok';
+        $result = 'ignore';
+        if ($payload->ref == $branch) {
+                exec('nohup ' . __DIR__ . '/make.php install > /dev/null 2>&1 &');
+                $result = 'install';
+        }
+
         $length = strlen($result);
-        
         header("Content-Length: $length");
         echo $result;
         break;

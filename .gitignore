@@ -5,4 +5,5 @@
 *.log
 makefile.json
 !/makefile.json
+!/tests/fixtures/makefile.json
 /make.phar

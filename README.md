@@ -10,15 +10,24 @@ a `by` key which is the array of commands to execute to complete the task.
 ## Usage
 
 ```
-Usage: make.php options target
+Usage: make.php [options] [target]
  Options:
-  help                displays this help
-  file=makefile.json  load rules from the given makefile
-  target=target       build the given target
+  -h, --help          displays this help
+  -f, --file FILE     load rules from the given makefile (default makefile.json)
+  -t, --target NAME   build the given target
   key=value           sets the variable 'key' to the given value
 
-target can be either the last option or given by the target= option.
+The target can be either the first plain argument or given by --target.
+Options may also be written without dashes, e.g. 'file=build.json'.
 ```
+
+The options may be written with or without dashes, so `make.phar -f build.json
+install` and `make.phar file=build.json install` are the same command. Running
+with no target, or with `-h`/`--help`, prints the usage above.
+
+make exits `0` when the target completes, and `1` when the target is unknown,
+the makefile is missing or unreadable, an option is not recognised, or a
+command returns a non-zero code.
 
 ## Building and installing
 
@@ -42,10 +51,21 @@ Targets in the bundled `makefile.json`:
 | `build`     | alias for `phar`                                             |
 | `install`   | `build`, then copy `make.phar` to the install dir            |
 | `uninstall` | remove `make.phar` from the install dir                      |
+| `test`      | run the test suite                                           |
 | `clean`     | delete the local `make.phar`                                 |
 
 The install directory defaults to `$MAKE_BIN`, then `~/.local/bin`. Override it
 by passing a path to the helper, e.g. `php install.php /usr/local/bin`.
+
+## Tests
+
+```
+php make.php test     # or: php tests/run.php
+```
+
+The suite covers the command line argument parsing directly, then runs
+`make.php` and a freshly built `make.phar` as subprocesses to check the
+messages and exit codes of both.
 
 ## Example makefile.json
 

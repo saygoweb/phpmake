@@ -1,0 +1,28 @@
+{
+    "variables": {
+        "who": "world"
+    },
+    "hello": {
+        "by": [
+            "echo hello"
+        ]
+    },
+    "greet": {
+        "by": [
+            "echo greeting {{who}}"
+        ]
+    },
+    "chained": {
+        "depends": [
+            "hello"
+        ],
+        "by": [
+            "echo chained"
+        ]
+    },
+    "boom": {
+        "by": [
+            "exit 3"
+        ]
+    }
+}

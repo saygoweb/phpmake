@@ -22,6 +22,11 @@
             "php install.php --uninstall"
         ]
     },
+    "test": {
+        "by": [
+            "php tests/run.php"
+        ]
+    },
     "clean": {
         "by": [
             "rm -f make.phar"

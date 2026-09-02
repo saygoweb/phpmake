@@ -114,7 +114,10 @@ class Runner
         if ($this->doLog && !$this->logFile) {
             $now = new DateTime();
             $dateString = $now->format('Y-m-d_His');
-            $this->logFile = fopen('log/' . $dateString . ".log", 'w');
+            if (!is_dir('log')) {
+                @mkdir('log', 0777, true);
+            }
+            $this->logFile = @fopen('log/' . $dateString . ".log", 'w') ?: null;
         }
         $commands = $this->makeConfig;
         if (!array_key_exists($command, $commands)) {
@@ -159,10 +162,14 @@ class Runner
         switch ($type) {
             case 'execute':
                 $this->notice(" Execute '$doer'");
-                $cwd = __DIR__;
-                $env = array_merge($_ENV, [
-                    'PATH=/usr/local/bin:/usr/bin:/bin'
-                ]);
+                // Run from the invocation directory, not the script/phar location,
+                // so commands and the makefile.json resolve against the same path.
+                $cwd = getcwd();
+                // Inherit the caller's environment (HOME, SSH_AUTH_SOCK, etc. are
+                // needed by git/ssh) but pin PATH to a known-good value. $_ENV is
+                // often empty depending on variables_order, so read the live env.
+                $env = getenv();
+                $env['PATH'] = '/usr/local/bin:/usr/bin:/bin';
                 $descriptors = [
                     1 => ["pipe", "w"]
                 ];

@@ -1,0 +1,30 @@
+{
+    "phar": {
+        "by": [
+            "php -d phar.readonly=0 build-phar.php"
+        ]
+    },
+    "build": {
+        "depends": [
+            "phar"
+        ]
+    },
+    "install": {
+        "depends": [
+            "build"
+        ],
+        "by": [
+            "php install.php"
+        ]
+    },
+    "uninstall": {
+        "by": [
+            "php install.php --uninstall"
+        ]
+    },
+    "clean": {
+        "by": [
+            "rm -f make.phar"
+        ]
+    }
+}
